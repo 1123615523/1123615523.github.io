@@ -1,0 +1,162 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>关于分库分表 | DengKe.W的小破站 '┗|｀O′|┛'</title><meta name="keywords" content="Java"><meta name="author" content="DengKe.W"><meta name="copyright" content="DengKe.W"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="为什么要分库分表？分库分表，其实是因为业务体量较大，数据增长较快，所以需要把数据拆分到不同的库表中去，减轻数据库的压力。 分库分表操作主要有垂直拆分和水平拆分：  垂直拆分：指按照业务将表进行分类，分布到不同的数据库上面，这样也就将请求的压力分摊到了不同的数据库上面。最终一个数据库由很多表去构成，每个表对应着不同的业务，也就是专库专用。 水平拆分：如果垂直拆分后遇到了单机瓶颈，可以使用水平拆分。相">
+<meta property="og:type" content="article">
+<meta property="og:title" content="关于分库分表">
+<meta property="og:url" content="http://example.com/2022/03/18/%E8%87%AA%E7%A0%94%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8%E8%B7%AF%E7%94%B1%E7%BB%84%E4%BB%B6/index.html">
+<meta property="og:site_name" content="DengKe.W的小破站 &#39;┗|｀O′|┛&#39;">
+<meta property="og:description" content="为什么要分库分表？分库分表，其实是因为业务体量较大，数据增长较快，所以需要把数据拆分到不同的库表中去，减轻数据库的压力。 分库分表操作主要有垂直拆分和水平拆分：  垂直拆分：指按照业务将表进行分类，分布到不同的数据库上面，这样也就将请求的压力分摊到了不同的数据库上面。最终一个数据库由很多表去构成，每个表对应着不同的业务，也就是专库专用。 水平拆分：如果垂直拆分后遇到了单机瓶颈，可以使用水平拆分。相">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/img/articlepictures/3.jpg">
+<meta property="article:published_time" content="2022-03-18T01:26:21.000Z">
+<meta property="article:modified_time" content="2022-12-08T04:33:08.504Z">
+<meta property="article:author" content="DengKe.W">
+<meta property="article:tag" content="Java">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/img/articlepictures/3.jpg"><link rel="shortcut icon" href="/img/wdk.jpg"><link rel="canonical" href="http://example.com/2022/03/18/%E8%87%AA%E7%A0%94%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8%E8%B7%AF%E7%94%B1%E7%BB%84%E4%BB%B6/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: 'Copy successfully',
+    error: 'Copy error',
+    noSupport: 'The browser does not support'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: 'Just',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery@2/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery@2/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '关于分库分表',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2022-12-08 12:33:08'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.0.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/wdk.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data is-center"><div class="data-item"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">10</div></a></div><div class="data-item"><a href="/tags/"><div class="headline">Tags</div><div class="length-num">4</div></a></div><div class="data-item"><a href="/categories/"><div class="headline">Categories</div><div class="length-num">5</div></a></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-graduation-cap"></i><span> 博文</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> 生活</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fa fa-comments-o"></i><span> 分享</span></a></li><li><a class="site-page child" href="/photos/"><i class="fa-fw fa fa-camera-retro"></i><span> 相册</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fa fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 影视</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/comment/"><i class="fa-fw fa fa-paper-plane"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/img/articlepictures/3.jpg')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">DengKe.W的小破站 '┗|｀O′|┛'</a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-graduation-cap"></i><span> 博文</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> 生活</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fa fa-comments-o"></i><span> 分享</span></a></li><li><a class="site-page child" href="/photos/"><i class="fa-fw fa fa-camera-retro"></i><span> 相册</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fa fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 影视</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/comment/"><i class="fa-fw fa fa-paper-plane"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">关于分库分表</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2022-03-18T01:26:21.000Z" title="Created 2022-03-18 09:26:21">2022-03-18</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2022-12-08T04:33:08.504Z" title="Updated 2022-12-08 12:33:08">2022-12-08</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8/">分库分表</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="关于分库分表"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post View:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h3 id="为什么要分库分表？"><a href="#为什么要分库分表？" class="headerlink" title="为什么要分库分表？"></a>为什么要分库分表？</h3><p>分库分表，其实是因为业务体量较大，数据增长较快，所以需要把数据拆分到不同的库表中去，减轻数据库的压力。</p>
+<p>分库分表操作主要有<strong>垂直拆分</strong>和<strong>水平拆分：</strong></p>
+<ul>
+<li><strong>垂直拆分：</strong>指按照业务将表进行分类，分布到不同的数据库上面，这样也就将请求的压力分摊到了不同的数据库上面。最终一个数据库由很多表去构成，每个表对应着不同的业务，也就是专库专用。</li>
+<li><strong>水平拆分：</strong>如果垂直拆分后遇到了单机瓶颈，可以使用水平拆分。相对于垂直拆分的区别是：垂直拆分是吧不同的表拆分到了不同数据库中，而水平拆分，是把同一个表拆到不同的数据库中，如：tab_01，tab_02</li>
+</ul>
+<h3 id="需要哪些技术实现？"><a href="#需要哪些技术实现？" class="headerlink" title="需要哪些技术实现？"></a>需要哪些技术实现？</h3><ul>
+<li>是关于<strong>AOP切面</strong>的使用，这是因为需要给使用数据库的方法坐上标记，便于处理分库分表的逻辑，那么就需要<code>AOP</code>这项技术</li>
+<li>数据源的<strong>切换</strong>操作，既然有分库那么就会涉及在多个数据源之间进行🔗链接切换，便于把数据分配给不同的数据库去存储，所以这一项需要<code>数据源</code>，<code>散列算法</code>，<code>哈希寻址</code></li>
+<li>数据库表寻址操作，一条数据分配到哪个数据库，哪张表，都需要进行索引的计算。在方法的调用过程中最终通过<code>ThreadLocal</code>记录。</li>
+<li>为了能让数据均匀的分配到不同的库表中去，还需要考虑如何进行数据的散列操作，不能分库分表后，让数据都集中在某个库的某个表，这样就失去了分库分表的意义了。</li>
+</ul>
+<p>寻找当前数据落在哪个库哪个表的过程参考HashMap的put方法设计理念</p>
+<p><img src="/2022/03/18/%E8%87%AA%E7%A0%94%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8%E8%B7%AF%E7%94%B1%E7%BB%84%E4%BB%B6/HashMap.png" alt="示意图"></p>
+<blockquote>
+<p>可以将图中的哈希桶看作数据库，而Hash桶当存在Hash冲突时，会拉出一个链表或者红黑树结构的来存储数据，可以看作是数据库中的表，HashMap采用的一系列Hash算法使数据更加的散列，很好的解决数据过于集中分散在一个库或者一个表中的情况。</p>
+</blockquote>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">Author: </span><span class="post-copyright-info"><a href="mailto:undefined">DengKe.W</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">Link: </span><span class="post-copyright-info"><a href="http://example.com/2022/03/18/%E8%87%AA%E7%A0%94%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8%E8%B7%AF%E7%94%B1%E7%BB%84%E4%BB%B6/">http://example.com/2022/03/18/%E8%87%AA%E7%A0%94%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8%E8%B7%AF%E7%94%B1%E7%BB%84%E4%BB%B6/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Java/">Java</a></div><div class="post_share"><div class="social-share" data-image="/img/articlepictures/3.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2022/05/01/%E4%BC%98%E9%9B%85%E5%BC%BA%E5%A4%A7%E7%9A%84%E5%A4%9A%E7%BA%BF%E7%A8%8B%E6%93%8D%E4%BD%9C%E6%89%8B%E6%B3%95/"><img class="prev-cover" src="/img/articlepictures/5.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="cover of previous post"><div class="pagination-info"><div class="label">Previous Post</div><div class="prev_info">优雅强大的多线程操作手法</div></div></a></div><div class="next-post pull-right"><a href="/2022/03/15/%E5%B7%A5%E5%8E%82%E6%96%B9%E6%B3%95%E6%A8%A1%E5%BC%8F/"><img class="next-cover" src="/img/articlepictures/4.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="cover of next post"><div class="pagination-info"><div class="label">Next Post</div><div class="next_info">工厂方法模式</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/wdk.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">DengKe.W</div><div class="author-info__description">沉淀，分享，成长，让我们都有收获</div></div><div class="card-info-data is-center"><div class="card-info-data-item"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">10</div></a></div><div class="card-info-data-item"><a href="/tags/"><div class="headline">Tags</div><div class="length-num">4</div></a></div><div class="card-info-data-item"><a href="/categories/"><div class="headline">Categories</div><div class="length-num">5</div></a></div></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">如果现在不做出改变 那么也只是把以前的生活重演一遍而已</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Catalog</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8%EF%BC%9F"><span class="toc-number">1.</span> <span class="toc-text">为什么要分库分表？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9C%80%E8%A6%81%E5%93%AA%E4%BA%9B%E6%8A%80%E6%9C%AF%E5%AE%9E%E7%8E%B0%EF%BC%9F"><span class="toc-number">2.</span> <span class="toc-text">需要哪些技术实现？</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2023/02/02/%E7%BA%BF%E7%A8%8B%E6%B1%A0/" title="线程池"><img src="/img/articlepictures/6.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="线程池"/></a><div class="content"><a class="title" href="/2023/02/02/%E7%BA%BF%E7%A8%8B%E6%B1%A0/" title="线程池">线程池</a><time datetime="2023-02-02T02:13:36.000Z" title="Created 2023-02-02 10:13:36">2023-02-02</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/12/15/%E5%85%A8%E5%B1%80%E9%94%81%E5%92%8C%E8%A1%A8%E9%94%81/" title="锁🔒"><img src="/img/articlepictures/1.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="锁🔒"/></a><div class="content"><a class="title" href="/2022/12/15/%E5%85%A8%E5%B1%80%E9%94%81%E5%92%8C%E8%A1%A8%E9%94%81/" title="锁🔒">锁🔒</a><time datetime="2022-12-15T02:33:26.000Z" title="Created 2022-12-15 10:33:26">2022-12-15</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/12/12/%E7%B4%A2%E5%BC%95/" title="索引"><img src="/img/articlepictures/1.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="索引"/></a><div class="content"><a class="title" href="/2022/12/12/%E7%B4%A2%E5%BC%95/" title="索引">索引</a><time datetime="2022-12-12T07:45:34.000Z" title="Created 2022-12-12 15:45:34">2022-12-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/12/12/03%E4%B8%A8%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%EF%BC%9A%E4%BA%8B%E5%8A%A1%E7%89%B9%E6%80%A7/" title="事务特性"><img src="/img/articlepictures/2.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="事务特性"/></a><div class="content"><a class="title" href="/2022/12/12/03%E4%B8%A8%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%EF%BC%9A%E4%BA%8B%E5%8A%A1%E7%89%B9%E6%80%A7/" title="事务特性">事务特性</a><time datetime="2022-12-12T06:05:57.000Z" title="Created 2022-12-12 14:05:57">2022-12-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/12/08/02-%E6%97%A5%E5%BF%97%E7%B3%BB%E7%BB%9F%EF%BC%9A%E4%B8%80%E6%9D%A1SQL%E6%9B%B4%E6%96%B0%E8%AF%AD%E5%8F%A5%E6%98%AF%E5%A6%82%E4%BD%95%E6%89%A7%E8%A1%8C%E7%9A%84%EF%BC%9F/" title="MySQL的日志"><img src="/img/articlepictures/6.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="MySQL的日志"/></a><div class="content"><a class="title" href="/2022/12/08/02-%E6%97%A5%E5%BF%97%E7%B3%BB%E7%BB%9F%EF%BC%9A%E4%B8%80%E6%9D%A1SQL%E6%9B%B4%E6%96%B0%E8%AF%AD%E5%8F%A5%E6%98%AF%E5%A6%82%E4%BD%95%E6%89%A7%E8%A1%8C%E7%9A%84%EF%BC%9F/" title="MySQL的日志">MySQL的日志</a><time datetime="2022-12-08T05:25:55.000Z" title="Created 2022-12-08 13:25:55">2022-12-08</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2023 By DengKe.W</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Switch Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between single-column and double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back To Top"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

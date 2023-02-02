@@ -1,0 +1,189 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>事务特性 | DengKe.W的小破站 '┗|｀O′|┛'</title><meta name="keywords" content="MySQL"><meta name="author" content="DengKe.W"><meta name="copyright" content="DengKe.W"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="隔离性与隔离级别事务的经典例子就是转账，不论什么情况下都要保证收款人和汇款人的账户余额一致。 简单来说，事务就是要保证一组数据库操作，要么全部成功，要么全部失败。在 MySQL 中，事务支持是在引擎层实现的。MySQL 是一个支持多引擎的系统，但并不是所有的引擎都支持事务。比如 MySQL 原生的 MyISAM 引擎就不支持事务，这也是 MyISAM 被 InnoDB 取代的重要原因之一。 隔离级">
+<meta property="og:type" content="article">
+<meta property="og:title" content="事务特性">
+<meta property="og:url" content="http://example.com/2022/12/12/03%E4%B8%A8%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%EF%BC%9A%E4%BA%8B%E5%8A%A1%E7%89%B9%E6%80%A7/index.html">
+<meta property="og:site_name" content="DengKe.W的小破站 &#39;┗|｀O′|┛&#39;">
+<meta property="og:description" content="隔离性与隔离级别事务的经典例子就是转账，不论什么情况下都要保证收款人和汇款人的账户余额一致。 简单来说，事务就是要保证一组数据库操作，要么全部成功，要么全部失败。在 MySQL 中，事务支持是在引擎层实现的。MySQL 是一个支持多引擎的系统，但并不是所有的引擎都支持事务。比如 MySQL 原生的 MyISAM 引擎就不支持事务，这也是 MyISAM 被 InnoDB 取代的重要原因之一。 隔离级">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/img/articlepictures/2.jpg">
+<meta property="article:published_time" content="2022-12-12T06:05:57.000Z">
+<meta property="article:modified_time" content="2022-12-14T03:37:51.600Z">
+<meta property="article:author" content="DengKe.W">
+<meta property="article:tag" content="MySQL">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/img/articlepictures/2.jpg"><link rel="shortcut icon" href="/img/wdk.jpg"><link rel="canonical" href="http://example.com/2022/12/12/03%E4%B8%A8%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%EF%BC%9A%E4%BA%8B%E5%8A%A1%E7%89%B9%E6%80%A7/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: 'Copy successfully',
+    error: 'Copy error',
+    noSupport: 'The browser does not support'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: 'Just',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery@2/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery@2/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '事务特性',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2022-12-14 11:37:51'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.0.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/wdk.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data is-center"><div class="data-item"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">10</div></a></div><div class="data-item"><a href="/tags/"><div class="headline">Tags</div><div class="length-num">4</div></a></div><div class="data-item"><a href="/categories/"><div class="headline">Categories</div><div class="length-num">5</div></a></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-graduation-cap"></i><span> 博文</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> 生活</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fa fa-comments-o"></i><span> 分享</span></a></li><li><a class="site-page child" href="/photos/"><i class="fa-fw fa fa-camera-retro"></i><span> 相册</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fa fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 影视</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/comment/"><i class="fa-fw fa fa-paper-plane"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/img/articlepictures/2.jpg')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">DengKe.W的小破站 '┗|｀O′|┛'</a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-graduation-cap"></i><span> 博文</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> 生活</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fa fa-comments-o"></i><span> 分享</span></a></li><li><a class="site-page child" href="/photos/"><i class="fa-fw fa fa-camera-retro"></i><span> 相册</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fa fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 影视</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/comment/"><i class="fa-fw fa fa-paper-plane"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">事务特性</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2022-12-12T06:05:57.000Z" title="Created 2022-12-12 14:05:57">2022-12-12</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2022-12-14T03:37:51.600Z" title="Updated 2022-12-14 11:37:51">2022-12-14</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/MySQL/">MySQL</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="事务特性"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post View:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h3 id="隔离性与隔离级别"><a href="#隔离性与隔离级别" class="headerlink" title="隔离性与隔离级别"></a>隔离性与隔离级别</h3><p>事务的经典例子就是转账，不论什么情况下都要保证收款人和汇款人的账户余额一致。</p>
+<p>简单来说，事务就是要保证一组数据库操作，要么全部成功，要么全部失败。在 MySQL 中，事务支持是在<code>引擎层</code>实现的。MySQL 是一个支持多引擎的系统，但并不是所有的引擎都支持事务。比如 MySQL 原生的 MyISAM 引擎就不支持事务，这也是 MyISAM 被 InnoDB 取代的重要原因之一。</p>
+<p><strong>隔离级别：ACID（Atomicity、Consistency、Isolation、Durability，即原子性、一致性、隔离性、持久性）</strong></p>
+<p>当数据库上有多个事务同时执行的时候，就可能出现脏读（dirty read）、不可重复读（non-repeatable read）、幻读（phantom read）的问题，为了解决这些问题，就有了“隔离级别”的概念。</p>
+<p>SQL 标准的事务隔离级别包括：<code>读未提交（read uncommitted）、读提交（read committed）、可重复读（repeatable read）和串行化（serializable ）</code></p>
+<ul>
+<li>读未提交是指，一个事务还没提交时，它做的变更就能被别的事务看到。</li>
+<li>读提交是指，一个事务提交之后，它做的变更才会被其他事务看到。</li>
+<li>可重复读是指，一个事务执行过程中看到的数据，总是跟这个事务在启动时看到的数据是一致的。当然在可重复读隔离级别下，未提交变更对其他事务也是不可见的。</li>
+<li>串行化，顾名思义是对于同一行记录，“写”会加“写锁”，“读”会加“读锁”。当出现读写锁冲突的时候，后访问的事务必须等前一个事务执行完成，才能继续执行。</li>
+</ul>
+<p>在MySQL中按照时间顺序执行一个SQL，那么这两个事务的行为会是什么呢</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; create table T(c int) engine=InnoDB;</span><br><span class="line">insert into T(c) values(1);</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/12/12/03%E4%B8%A8%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%EF%BC%9A%E4%BA%8B%E5%8A%A1%E7%89%B9%E6%80%A7/mysql.png" alt="事务"></p>
+<p>那么在不同的事务隔离级别下两个事务看到的数据结果是什么</p>
+<ul>
+<li>若隔离级别是<code>读未提交</code>， 则 V1 的值就是 2。这时候事务 B 虽然还没有提交，但是结果已经被 A 看到了。因此，V2、V3 也都是 2。</li>
+<li>若隔离级别是<code>读提交</code>，则 V1 是 1，V2 的值是 2。事务 B 的更新在提交后才能被 A 看到。所以， V3 的值也是 2。</li>
+<li>若隔离级别是<code>可重复读</code>，则 V1、V2 是 1，V3 是 2。之所以 V2 还是 1，遵循的就是这个要求：事务在执行期间看到的数据前后必须是一致的。</li>
+<li>若隔离级别是<code>串行化</code>，则在事务 B 执行“将 1 改成 2”的时候，会被锁住。直到事务 A 提交后，事务 B 才可以继续执行。所以从 A 的角度看， V1、V2 值是 1，V3 的值是 2。</li>
+</ul>
+<p>在实现上，数据库里面会创建一个视图，访问的时候以视图的逻辑结果为准。在<code>可重复读</code>隔离级别下，这个视图是在事务启动时创建的，整个事务存在期间都用这个视图。在<code>读提交</code>隔离级别下，这个视图是在每个 SQL 语句开始执行的时候创建的。这里需要注意的是，<code>读未提交</code>隔离级别下直接返回记录上的最新值，没有视图概念；而<code>串行化</code>隔离级别下直接用加锁的方式来避免并行访问。</p>
+<h3 id="事务隔离的实现"><a href="#事务隔离的实现" class="headerlink" title="事务隔离的实现"></a>事务隔离的实现</h3><p>在 MySQL 中，实际上每条记录在更新的时候都会同时记录一条回滚操作。记录上的最新值，通过回滚操作，都可以得到前一个状态的值。</p>
+<p>假设一个值从 1 被按顺序改成了 2、3、4，在回滚日志里面就会有类似下面的记录</p>
+<p><img src="/2022/12/12/03%E4%B8%A8%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%EF%BC%9A%E4%BA%8B%E5%8A%A1%E7%89%B9%E6%80%A7/huigun.png" alt="回滚"></p>
+<p>当前值是 4，但是在查询这条记录的时候，不同时刻启动的事务会有不同的 read-view。如图中看到的，在视图 A、B、C 里面，这一个记录的值分别是 1、2、4，同一条记录在系统中可以存在多个版本，就是数据库的多版本并发控制（MVCC）。对于 read-view A，要得到 1，就必须将当前值依次执行图中所有的回滚操作得到。</p>
+<p>同时会发现，即使现在有另外一个事务正在将 4 改成 5，这个事务跟 read-view A、B、C 对应的事务是不会冲突的。</p>
+<p>回滚日志总不能一直保留吧，什么时候删除呢？答案是，在不需要的时候才删除。也就是说，系统会判断，当没有事务再需要用到这些回滚日志时，回滚日志会被删除。</p>
+<p>什么时候才不需要了呢？就是当系统里没有比这个回滚日志更早的 read-view 的时候。</p>
+<p>所以尽量不要使用长事务。</p>
+<p>长事务意味着系统里面会存在很老的事务视图。由于这些事务随时可能访问数据库里面的任何数据，所以这个事务提交之前，数据库里面它可能用到的回滚记录都必须保留，这就会导致大量占用存储空间。</p>
+<p>长事务还占用锁资源，也可能拖垮整个库。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>读未提交：别人改数据的事务尚未提交，我在我的事务中也能读到。<br>读已提交：别人改数据的事务已经提交，我在我的事务中才能读到。<br>可重复读：别人改数据的事务已经提交，我在我的事务中也不去读。<br>串行：我的事务尚未提交，别人就别想改数据。<br>这4种隔离级别，并行性能依次降低，安全性依次提高。</p>
+<h3 id="Spring支持7种传播特性："><a href="#Spring支持7种传播特性：" class="headerlink" title="Spring支持7种传播特性："></a>Spring支持7种传播特性：</h3><ul>
+<li><strong>REQUIRED</strong> 如果当前上下文中存在事务，那么加入该事务，如果不存在事务，创建一个事务，这是默认的传播属性值。</li>
+<li><strong>SUPPORTS</strong> 如果当前上下文存在事务，则支持事务加入事务，如果不存在事务，则使用非事务的方式执行。</li>
+<li><strong>MANDATORY</strong> 如果当前上下文中存在事务，否则抛出异常。</li>
+<li><strong>REQUIRES_NEW</strong> 每次都会新建一个事务，并且同时将上下文中的事务挂起，执行当前新建事务完成以后，上下文事务恢复再执行。</li>
+<li><strong>NOT_SUPPORTED</strong> 如果当前上下文中存在事务，则挂起当前事务，然后新的方法在没有事务的环境中执行。</li>
+<li><strong>NEVER</strong> 如果当前上下文中存在事务，则抛出异常，否则在无事务环境上执行代码。</li>
+<li><strong>NESTED</strong> 如果当前上下文中存在事务，则嵌套事务执行，如果不存在事务，则新建事务。</li>
+</ul>
+<h3 id="Spring事务失效的场景："><a href="#Spring事务失效的场景：" class="headerlink" title="Spring事务失效的场景："></a>Spring事务失效的场景：</h3><p><img src="/2022/12/12/03%E4%B8%A8%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%EF%BC%9A%E4%BA%8B%E5%8A%A1%E7%89%B9%E6%80%A7/shiwu.png" alt="失效场景"></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">Author: </span><span class="post-copyright-info"><a href="mailto:undefined">DengKe.W</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">Link: </span><span class="post-copyright-info"><a href="http://example.com/2022/12/12/03%E4%B8%A8%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%EF%BC%9A%E4%BA%8B%E5%8A%A1%E7%89%B9%E6%80%A7/">http://example.com/2022/12/12/03%E4%B8%A8%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%EF%BC%9A%E4%BA%8B%E5%8A%A1%E7%89%B9%E6%80%A7/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/MySQL/">MySQL</a></div><div class="post_share"><div class="social-share" data-image="/img/articlepictures/2.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2022/12/12/%E7%B4%A2%E5%BC%95/"><img class="prev-cover" src="/img/articlepictures/1.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="cover of previous post"><div class="pagination-info"><div class="label">Previous Post</div><div class="prev_info">索引</div></div></a></div><div class="next-post pull-right"><a href="/2022/12/08/02-%E6%97%A5%E5%BF%97%E7%B3%BB%E7%BB%9F%EF%BC%9A%E4%B8%80%E6%9D%A1SQL%E6%9B%B4%E6%96%B0%E8%AF%AD%E5%8F%A5%E6%98%AF%E5%A6%82%E4%BD%95%E6%89%A7%E8%A1%8C%E7%9A%84%EF%BC%9F/"><img class="next-cover" src="/img/articlepictures/6.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="cover of next post"><div class="pagination-info"><div class="label">Next Post</div><div class="next_info">MySQL的日志</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><div><a href="/2022/12/08/02-%E6%97%A5%E5%BF%97%E7%B3%BB%E7%BB%9F%EF%BC%9A%E4%B8%80%E6%9D%A1SQL%E6%9B%B4%E6%96%B0%E8%AF%AD%E5%8F%A5%E6%98%AF%E5%A6%82%E4%BD%95%E6%89%A7%E8%A1%8C%E7%9A%84%EF%BC%9F/" title="MySQL的日志"><img class="cover" src="/img/articlepictures/6.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-12-08</div><div class="title">MySQL的日志</div></div></a></div><div><a href="/2022/12/06/01-%E5%9F%BA%E7%A1%80%E6%9E%B6%E6%9E%84%EF%BC%9A%E4%B8%80%E6%9D%A1SQL%E6%9F%A5%E8%AF%A2%E8%AF%AD%E5%8F%A5%E6%98%AF%E5%A6%82%E4%BD%95%E6%89%A7%E8%A1%8C%E7%9A%84%EF%BC%9F/" title="一条SQL查询语句是如何执行的？"><img class="cover" src="/img/articlepictures/2.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-12-06</div><div class="title">一条SQL查询语句是如何执行的？</div></div></a></div><div><a href="/2022/12/15/%E5%85%A8%E5%B1%80%E9%94%81%E5%92%8C%E8%A1%A8%E9%94%81/" title="锁🔒"><img class="cover" src="/img/articlepictures/1.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-12-15</div><div class="title">锁🔒</div></div></a></div><div><a href="/2022/12/12/%E7%B4%A2%E5%BC%95/" title="索引"><img class="cover" src="/img/articlepictures/1.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-12-12</div><div class="title">索引</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/wdk.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">DengKe.W</div><div class="author-info__description">沉淀，分享，成长，让我们都有收获</div></div><div class="card-info-data is-center"><div class="card-info-data-item"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">10</div></a></div><div class="card-info-data-item"><a href="/tags/"><div class="headline">Tags</div><div class="length-num">4</div></a></div><div class="card-info-data-item"><a href="/categories/"><div class="headline">Categories</div><div class="length-num">5</div></a></div></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">如果现在不做出改变 那么也只是把以前的生活重演一遍而已</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Catalog</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9A%94%E7%A6%BB%E6%80%A7%E4%B8%8E%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB"><span class="toc-number">1.</span> <span class="toc-text">隔离性与隔离级别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%9A%84%E5%AE%9E%E7%8E%B0"><span class="toc-number">2.</span> <span class="toc-text">事务隔离的实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">3.</span> <span class="toc-text">总结</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Spring%E6%94%AF%E6%8C%817%E7%A7%8D%E4%BC%A0%E6%92%AD%E7%89%B9%E6%80%A7%EF%BC%9A"><span class="toc-number">4.</span> <span class="toc-text">Spring支持7种传播特性：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Spring%E4%BA%8B%E5%8A%A1%E5%A4%B1%E6%95%88%E7%9A%84%E5%9C%BA%E6%99%AF%EF%BC%9A"><span class="toc-number">5.</span> <span class="toc-text">Spring事务失效的场景：</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2023/02/02/%E7%BA%BF%E7%A8%8B%E6%B1%A0/" title="线程池"><img src="/img/articlepictures/6.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="线程池"/></a><div class="content"><a class="title" href="/2023/02/02/%E7%BA%BF%E7%A8%8B%E6%B1%A0/" title="线程池">线程池</a><time datetime="2023-02-02T02:13:36.000Z" title="Created 2023-02-02 10:13:36">2023-02-02</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/12/15/%E5%85%A8%E5%B1%80%E9%94%81%E5%92%8C%E8%A1%A8%E9%94%81/" title="锁🔒"><img src="/img/articlepictures/1.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="锁🔒"/></a><div class="content"><a class="title" href="/2022/12/15/%E5%85%A8%E5%B1%80%E9%94%81%E5%92%8C%E8%A1%A8%E9%94%81/" title="锁🔒">锁🔒</a><time datetime="2022-12-15T02:33:26.000Z" title="Created 2022-12-15 10:33:26">2022-12-15</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/12/12/%E7%B4%A2%E5%BC%95/" title="索引"><img src="/img/articlepictures/1.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="索引"/></a><div class="content"><a class="title" href="/2022/12/12/%E7%B4%A2%E5%BC%95/" title="索引">索引</a><time datetime="2022-12-12T07:45:34.000Z" title="Created 2022-12-12 15:45:34">2022-12-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/12/12/03%E4%B8%A8%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%EF%BC%9A%E4%BA%8B%E5%8A%A1%E7%89%B9%E6%80%A7/" title="事务特性"><img src="/img/articlepictures/2.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="事务特性"/></a><div class="content"><a class="title" href="/2022/12/12/03%E4%B8%A8%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%EF%BC%9A%E4%BA%8B%E5%8A%A1%E7%89%B9%E6%80%A7/" title="事务特性">事务特性</a><time datetime="2022-12-12T06:05:57.000Z" title="Created 2022-12-12 14:05:57">2022-12-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/12/08/02-%E6%97%A5%E5%BF%97%E7%B3%BB%E7%BB%9F%EF%BC%9A%E4%B8%80%E6%9D%A1SQL%E6%9B%B4%E6%96%B0%E8%AF%AD%E5%8F%A5%E6%98%AF%E5%A6%82%E4%BD%95%E6%89%A7%E8%A1%8C%E7%9A%84%EF%BC%9F/" title="MySQL的日志"><img src="/img/articlepictures/6.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="MySQL的日志"/></a><div class="content"><a class="title" href="/2022/12/08/02-%E6%97%A5%E5%BF%97%E7%B3%BB%E7%BB%9F%EF%BC%9A%E4%B8%80%E6%9D%A1SQL%E6%9B%B4%E6%96%B0%E8%AF%AD%E5%8F%A5%E6%98%AF%E5%A6%82%E4%BD%95%E6%89%A7%E8%A1%8C%E7%9A%84%EF%BC%9F/" title="MySQL的日志">MySQL的日志</a><time datetime="2022-12-08T05:25:55.000Z" title="Created 2022-12-08 13:25:55">2022-12-08</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2023 By DengKe.W</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Switch Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between single-column and double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back To Top"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
